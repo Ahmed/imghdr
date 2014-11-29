@@ -23,6 +23,7 @@ const (
 //First 32 bytes.
 func GetHeader(filename string) string {
 	f, err := os.Open(filename)
+    defer f.Close()
 	if err != nil {
 		panic(err)
 	}
