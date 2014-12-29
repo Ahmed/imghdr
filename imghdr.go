@@ -7,23 +7,24 @@ import (
 )
 
 const (
-	BMP  = 0
-	EXIF = 1
-	GIF  = 2
-	JPEG = 3
-	PBM  = 4
-	PGM  = 5
-	PNG  = 6
-	PPM  = 7
-	RAST = 8
-	RGB  = 9
-	XBM  = 10
+	BMP     = 0
+	EXIF    = 1
+	GIF     = 2
+	JPEG    = 3
+	PBM     = 4
+	PGM     = 5
+	PNG     = 6
+	PPM     = 7
+	RAST    = 8
+	RGB     = 9
+	XBM     = 10
+	OPENEXR = 11
 )
 
 //First 32 bytes.
 func GetHeader(filename string) string {
 	f, err := os.Open(filename)
-    defer f.Close()
+	defer f.Close()
 	if err != nil {
 		panic(err)
 	}
@@ -68,6 +69,9 @@ func IsXBM(header string) bool {
 func IsBMP(header string) bool {
 	return header[:2] == "BM"
 }
+func IsOPENEXR(header string) bool {
+	return header[:4] == "\x76\x2f\x31\x01"
+}
 func What(header string) int {
 	if IsBMP(header) {
 		return BMP
@@ -91,11 +95,13 @@ func What(header string) int {
 		return RGB
 	} else if IsXBM(header) {
 		return XBM
+	} else if IsOPENEXR(header) {
+		return OPENEXR
 	} else {
 		panic("unknown type.")
 	}
 }
 func WhatToString(header string) string {
-	names := []string{"bmp", "exif", "gif", "jpeg", "pbm", "pgm", "png", "ppm", "rast", "rgb", "xbm"}
+	names := []string{"bmp", "exif", "gif", "jpeg", "pbm", "pgm", "png", "ppm", "rast", "rgb", "xbm", "openexr"}
 	return names[What(header)]
 }
